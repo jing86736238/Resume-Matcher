@@ -15,6 +15,7 @@ import Plus from 'lucide-react/dist/esm/icons/plus';
 import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
 import ChevronLeft from 'lucide-react/dist/esm/icons/chevron-left';
 import ChevronRight from 'lucide-react/dist/esm/icons/chevron-right';
+import Settings from 'lucide-react/dist/esm/icons/settings';
 import { Button } from '@/components/ui/button';
 import { useTranslations } from '@/lib/i18n';
 import {
@@ -31,7 +32,12 @@ import { KanbanColumn } from './kanban-column';
 import { BulkActionBar } from './bulk-action-bar';
 import { CardDetailModal } from './card-detail-modal';
 import { ManualAddApplicationDialog } from './manual-add-application-dialog';
+import { StatusVisibilityDialog } from './status-visibility-dialog';
 import { planMove } from './reorder';
+import {
+  readTrackerVisibleStatuses,
+  writeTrackerVisibleStatuses,
+} from '@/lib/utils/tracker-visibility';
 
 function emptyColumns(): ApplicationColumns {
   return APPLICATION_STATUS_ORDER.reduce((acc, status) => {
@@ -53,6 +59,10 @@ export function KanbanBoard() {
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
   const [openCardId, setOpenCardId] = useState<string | null>(null);
   const [manualAddOpen, setManualAddOpen] = useState(false);
+  const [visibilityDialogOpen, setVisibilityDialogOpen] = useState(false);
+  const [visibleStatuses, setVisibleStatuses] = useState<ApplicationStatus[]>(
+    readTrackerVisibleStatuses
+  );
 
   // Horizontal-scroll affordance: the seven stages overflow the canvas, so we
   // track whether more columns sit off-screen and surface controls + a stage
@@ -100,8 +110,7 @@ export function KanbanBoard() {
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    // Board width is driven by the seven fixed-width columns, so we only need to
-    // (re)attach when the board appears — not on every card-list change.
+    // Re-sync when the board appears or its visible column set changes.
     const sync = () => {
       setCanScrollLeft(el.scrollLeft > 4);
       setCanScrollRight(Math.ceil(el.scrollLeft + el.clientWidth) < el.scrollWidth - 4);
@@ -113,7 +122,7 @@ export function KanbanBoard() {
       el.removeEventListener('scroll', sync);
       window.removeEventListener('resize', sync);
     };
-  }, [loading, isEmpty]);
+  }, [loading, isEmpty, visibleStatuses]);
 
   const scrollByColumn = (direction: 1 | -1) => {
     scrollRef.current?.scrollBy({ left: direction * 320, behavior: 'smooth' });
@@ -156,6 +165,13 @@ export function KanbanBoard() {
   };
 
   const clearSelection = () => setSelectedIds(new Set());
+
+  const handleVisibilityChange = (statuses: ApplicationStatus[]) => {
+    setVisibleStatuses(statuses);
+    writeTrackerVisibleStatuses(statuses);
+    // Avoid leaving hidden cards selected for bulk actions.
+    clearSelection();
+  };
 
   const handleBulkMove = async (status: ApplicationStatus) => {
     const ids = [...selectedIds];
@@ -222,6 +238,14 @@ export function KanbanBoard() {
             <Plus className="h-4 w-4" />
             {t('tracker.addApplication')}
           </Button>
+          <Button
+            variant="outline"
+            onClick={() => setVisibilityDialogOpen(true)}
+            aria-label={t('tracker.visibility.manage')}
+          >
+            <Settings className="h-4 w-4" />
+            {t('tracker.visibility.manage')}
+          </Button>
         </div>
       </div>
 
@@ -254,6 +278,13 @@ export function KanbanBoard() {
             <p className="font-serif text-lg text-ink">{t('tracker.empty.title')}</p>
             <p className="mt-1 font-mono text-xs text-ink-soft">{t('tracker.empty.description')}</p>
           </div>
+        ) : visibleStatuses.length === 0 ? (
+          <div className="flex flex-1 flex-col items-center justify-center p-10 text-center">
+            <p className="font-serif text-lg text-ink">{t('tracker.visibility.noneVisible')}</p>
+            <p className="mt-1 font-mono text-xs text-ink-soft">
+              {t('tracker.visibility.description')}
+            </p>
+          </div>
         ) : (
           <DndContext
             sensors={sensors}
@@ -261,12 +292,12 @@ export function KanbanBoard() {
             onDragEnd={handleDragEnd}
           >
             <div ref={scrollRef} className="flex min-h-0 flex-1 overflow-x-auto">
-              {APPLICATION_STATUS_ORDER.map((status, index) => (
+              {visibleStatuses.map((status, index) => (
                 <div
                   key={status}
                   data-column={status}
                   className={`flex ${
-                    index < APPLICATION_STATUS_ORDER.length - 1 ? 'border-r border-black' : ''
+                    index < visibleStatuses.length - 1 ? 'border-r border-black' : ''
                   }`}
                 >
                   <KanbanColumn
@@ -286,7 +317,7 @@ export function KanbanBoard() {
 
       {/* Stage rail — an always-visible map of every stage (with counts) so
           off-screen sections are never lost; click a stage to jump to it. */}
-      {!isEmpty && (
+      {!isEmpty && visibleStatuses.length > 0 && (
         <div className="flex shrink-0 items-center gap-3 overflow-x-auto border-t border-black bg-paper-tint px-6 py-2 md:px-8">
           {canScrollRight && (
             <span className="flex shrink-0 items-center gap-1 font-mono text-[11px] font-bold uppercase tracking-wide text-primary">
@@ -295,7 +326,7 @@ export function KanbanBoard() {
             </span>
           )}
           <div className="flex items-center gap-2">
-            {APPLICATION_STATUS_ORDER.map((status) => (
+            {visibleStatuses.map((status) => (
               <button
                 key={status}
                 type="button"
@@ -323,6 +354,13 @@ export function KanbanBoard() {
         open={manualAddOpen}
         onOpenChange={setManualAddOpen}
         onCreated={load}
+      />
+
+      <StatusVisibilityDialog
+        open={visibilityDialogOpen}
+        onOpenChange={setVisibilityDialogOpen}
+        visibleStatuses={visibleStatuses}
+        onVisibilityChange={handleVisibilityChange}
       />
     </div>
   );
