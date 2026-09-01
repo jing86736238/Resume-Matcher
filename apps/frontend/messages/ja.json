@@ -983,6 +983,12 @@
     "title": "応募トラッカー",
     "subtitle": "各カスタマイズ済み履歴書の選考状況を管理します。",
     "addApplication": "応募を追加",
+    "visibility": {
+      "manage": "管理",
+      "title": "ステータス列を管理",
+      "description": "表示する応募ステータス列を選択してください。",
+      "noneVisible": "すべてのステータス列が非表示です。"
+    },
     "columns": {
       "saved": "保存済み",
       "applied": "応募済み",
