@@ -991,6 +991,7 @@
       "placeholder": "Write an interview question…",
       "save": "Save question",
       "saveFailed": "Could not save the interview question.",
+      "delete": "Delete interview question",
       "loadFailed": "Could not load interview questions.",
       "empty": "No interview questions recorded yet."
     },
@@ -1018,6 +1019,7 @@
       "companyUnknown": "Unknown company",
       "roleUnknown": "Untitled role",
       "sharedResume": "Shared resume",
+      "interviewTime": "Interview",
       "selectAria": "Select application",
       "dragAria": "Drag to reorder"
     },
@@ -1027,6 +1029,8 @@
       "notes": "Notes",
       "notesPlaceholder": "Add notes about this application…",
       "saveNotes": "Save notes",
+      "interviewTime": "Interview time",
+      "saveInterviewTime": "Save interview time",
       "resumeUnavailable": "The applied resume is no longer available.",
       "loadFailed": "Could not load this application.",
       "editResume": "Edit resume"

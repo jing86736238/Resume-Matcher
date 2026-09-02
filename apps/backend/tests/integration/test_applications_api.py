@@ -152,8 +152,48 @@ class TestInterviewQuestions:
         assert deleted.status_code == 200
         assert listed.json() == []
 
+    async def test_delete_question(self, isolated_db):
+        card = await _seed_card(isolated_db, job_id="jq-del", resume_id="rq-del")
+        async with _client() as client:
+            created = await client.post(
+                f"/api/v1/applications/{card['application_id']}/interview-questions",
+                json={"question": "What is your testing strategy?"},
+            )
+            deleted = await client.delete(
+                f"/api/v1/applications/interview-questions/{created.json()['question_id']}"
+            )
+            listed = await client.get("/api/v1/applications/interview-questions")
+        assert deleted.status_code == 200
+        assert listed.json() == []
+
 
 class TestUpdateAndMove:
+    async def test_patch_interview_time_persists(self, isolated_db):
+        card = await _seed_card(isolated_db, status="interview")
+        interview_at = "2026-09-10T14:30:00.000Z"
+        async with _client() as client:
+            resp = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"interview_at": interview_at},
+            )
+            assert resp.status_code == 200
+            assert resp.json()["interview_at"] == interview_at
+
+            board = (await client.get("/api/v1/applications")).json()["columns"]
+            assert board["interview"][0]["interview_at"] == interview_at
+
+            detail = (
+                await client.get(f"/api/v1/applications/{card['application_id']}")
+            ).json()
+            assert detail["interview_at"] == interview_at
+
+            cleared = await client.patch(
+                f"/api/v1/applications/{card['application_id']}",
+                json={"interview_at": None},
+            )
+            assert cleared.status_code == 200
+            assert cleared.json()["interview_at"] is None
+
     async def test_patch_moves_card_across_columns(self, isolated_db):
         a = await _seed_card(isolated_db, job_id="j1", resume_id="r1", status="applied")
         b = await _seed_card(isolated_db, job_id="j2", resume_id="r2", status="applied")

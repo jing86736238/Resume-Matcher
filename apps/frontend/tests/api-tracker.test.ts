@@ -4,6 +4,7 @@ import {
   bulkDeleteApplications,
   createApplication,
   createInterviewQuestion,
+  deleteInterviewQuestion,
   deleteApplication,
   listInterviewQuestions,
   updateApplication,
@@ -68,6 +69,21 @@ describe('tracker API client', () => {
     expect(JSON.parse(String(options.body))).toEqual({ status: 'rejected', position: 0 });
   });
 
+  it('updateApplication PATCHes an interview time', async () => {
+    fetchMock.mockResolvedValue(
+      new Response(
+        JSON.stringify({ application_id: 'x', interview_at: '2026-09-10T14:30:00.000Z' }),
+        { status: 200 }
+      )
+    );
+    await updateApplication('x', { interview_at: '2026-09-10T14:30:00.000Z' });
+    const { options } = lastCall();
+    expect(options.method).toBe('PATCH');
+    expect(JSON.parse(String(options.body))).toEqual({
+      interview_at: '2026-09-10T14:30:00.000Z',
+    });
+  });
+
   it('createApplication POSTs the manual-add payload', async () => {
     fetchMock.mockResolvedValue(
       new Response(JSON.stringify({ application_id: 'x' }), { status: 200 })
@@ -106,6 +122,16 @@ describe('tracker API client', () => {
     const { url, options } = lastCall();
     expect(url).toContain('/applications/interview-questions');
     expect(options.method).toBeUndefined();
+  });
+
+  it('deleteInterviewQuestion DELETEs the question resource', async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ message: 'ok', affected: 1 }), { status: 200 })
+    );
+    await deleteInterviewQuestion('q1');
+    const { url, options } = lastCall();
+    expect(url).toContain('/applications/interview-questions/q1');
+    expect(options.method).toBe('DELETE');
   });
 
   it('bulkDeleteApplications POSTs to /applications/bulk-delete', async () => {

@@ -171,6 +171,7 @@ class Database:
             "company": row.company,
             "role": row.role,
             "applied_at": row.applied_at,
+            "interview_at": row.interview_at,
             "notes": row.notes,
             "position": row.position,
             "created_at": row.created_at,
@@ -514,6 +515,7 @@ class Database:
         company: str | None = None,
         role: str | None = None,
         applied_at: str | None = None,
+        interview_at: str | None = None,
         notes: str | None = None,
     ) -> dict[str, Any]:
         """Create a tracker card, deduped on (job_id, resume_id).
@@ -544,6 +546,7 @@ class Database:
                 company=company,
                 role=role,
                 applied_at=applied_at,
+                interview_at=interview_at,
                 notes=notes,
                 position=position,
                 created_at=now,
@@ -620,6 +623,16 @@ class Database:
                 for question, application in result.all()
             ]
 
+    async def delete_interview_question(self, question_id: str) -> bool:
+        """Delete one recorded interview question."""
+        async with self._session() as session:
+            row = await session.get(InterviewQuestion, question_id)
+            if row is None:
+                return False
+            await session.delete(row)
+            await session.commit()
+            return True
+
     async def update_application(
         self, application_id: str, updates: dict[str, Any]
     ) -> dict[str, Any] | None:
@@ -638,7 +651,7 @@ class Database:
             new_status = updates.get("status", old_status)
             target_position = updates.get("position", None)
 
-            for key in ("company", "role", "applied_at", "notes"):
+            for key in ("company", "role", "applied_at", "interview_at", "notes"):
                 if key in updates:
                     setattr(row, key, updates[key])
 

@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Loader2 from 'lucide-react/dist/esm/icons/loader-2';
+import Trash2 from 'lucide-react/dist/esm/icons/trash-2';
 import {
   Dialog,
   DialogContent,
@@ -10,7 +11,11 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { useTranslations } from '@/lib/i18n';
-import { listInterviewQuestions, type InterviewQuestion } from '@/lib/api/tracker';
+import {
+  deleteInterviewQuestion,
+  listInterviewQuestions,
+  type InterviewQuestion,
+} from '@/lib/api/tracker';
 
 interface InterviewQuestionsDialogProps {
   open: boolean;
@@ -27,6 +32,7 @@ export function InterviewQuestionsDialog({
   const [questions, setQuestions] = useState<InterviewQuestion[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [deletingId, setDeletingId] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open) return;
@@ -47,6 +53,18 @@ export function InterviewQuestionsDialog({
       cancelled = true;
     };
   }, [open, refreshKey]);
+
+  const handleDelete = async (questionId: string) => {
+    setDeletingId(questionId);
+    try {
+      await deleteInterviewQuestion(questionId);
+      setQuestions((current) => current.filter((item) => item.question_id !== questionId));
+    } catch {
+      setError(true);
+    } finally {
+      setDeletingId(null);
+    }
+  };
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -76,7 +94,23 @@ export function InterviewQuestionsDialog({
                   {item.company || t('tracker.card.companyUnknown')} ·{' '}
                   {item.role || t('tracker.card.roleUnknown')}
                 </div>
-                <p className="mt-2 whitespace-pre-wrap text-sm text-ink">{item.question}</p>
+                <div className="mt-2 flex items-start justify-between gap-3">
+                  <p className="whitespace-pre-wrap text-sm text-ink">{item.question}</p>
+                  <button
+                    type="button"
+                    aria-label={t('tracker.interviewQuestions.delete')}
+                    title={t('tracker.interviewQuestions.delete')}
+                    onClick={() => void handleDelete(item.question_id)}
+                    disabled={deletingId === item.question_id}
+                    className="shrink-0 border border-black p-1 text-ink hover:text-destructive disabled:opacity-50"
+                  >
+                    {deletingId === item.question_id ? (
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                    ) : (
+                      <Trash2 className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </article>
             ))}
           </div>

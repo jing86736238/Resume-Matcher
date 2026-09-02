@@ -991,6 +991,7 @@
       "placeholder": "Escreva uma pergunta de entrevista…",
       "save": "Salvar pergunta",
       "saveFailed": "Não foi possível salvar a pergunta.",
+      "delete": "Excluir pergunta de entrevista",
       "loadFailed": "Não foi possível carregar as perguntas.",
       "empty": "Nenhuma pergunta registrada ainda."
     },
@@ -1018,6 +1019,7 @@
       "companyUnknown": "Empresa desconhecida",
       "roleUnknown": "Cargo sem título",
       "sharedResume": "Currículo compartilhado",
+      "interviewTime": "Entrevista",
       "selectAria": "Selecionar candidatura",
       "dragAria": "Arraste para reordenar"
     },
@@ -1027,6 +1029,8 @@
       "notes": "Notas",
       "notesPlaceholder": "Adicione notas sobre esta candidatura…",
       "saveNotes": "Salvar notas",
+      "interviewTime": "Horário da entrevista",
+      "saveInterviewTime": "Salvar horário da entrevista",
       "resumeUnavailable": "O currículo enviado não está mais disponível.",
       "loadFailed": "Não foi possível carregar esta candidatura.",
       "editResume": "Editar currículo"

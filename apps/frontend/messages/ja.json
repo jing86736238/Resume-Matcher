@@ -991,6 +991,7 @@
       "placeholder": "面接質問を入力…",
       "save": "保存",
       "saveFailed": "質問を保存できませんでした。",
+      "delete": "面接質問を削除",
       "loadFailed": "質問を読み込めませんでした。",
       "empty": "記録された面接質問はまだありません。"
     },
@@ -1018,6 +1019,7 @@
       "companyUnknown": "会社名不明",
       "roleUnknown": "役職名なし",
       "sharedResume": "共有された履歴書",
+      "interviewTime": "面接時間",
       "selectAria": "応募を選択",
       "dragAria": "ドラッグして並べ替え"
     },
@@ -1027,6 +1029,8 @@
       "notes": "メモ",
       "notesPlaceholder": "この応募についてのメモを追加…",
       "saveNotes": "メモを保存",
+      "interviewTime": "面接時間",
+      "saveInterviewTime": "面接時間を保存",
       "resumeUnavailable": "応募した履歴書は利用できなくなりました。",
       "loadFailed": "この応募を読み込めませんでした。",
       "editResume": "履歴書を編集"

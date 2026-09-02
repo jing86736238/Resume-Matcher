@@ -126,6 +126,21 @@ async def create_interview_question(
     return InterviewQuestionResponse(**question)
 
 
+@router.delete("/interview-questions/{question_id}", response_model=ApplicationActionResponse)
+async def delete_interview_question(question_id: str) -> ApplicationActionResponse:
+    """Delete one recorded interview question."""
+    try:
+        deleted = await db.delete_interview_question(question_id)
+    except Exception as e:
+        logger.error("Failed to delete interview question %s: %s", question_id, e)
+        raise HTTPException(
+            status_code=500, detail="Failed to delete interview question. Please try again."
+        )
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Interview question not found")
+    return ApplicationActionResponse(message="Interview question deleted", affected=1)
+
+
 @router.get("/{application_id}", response_model=ApplicationDetailResponse)
 async def get_application_detail(application_id: str) -> ApplicationDetailResponse:
     """Get a card with its embedded JD and applied resume (one round-trip).

@@ -991,6 +991,7 @@
       "placeholder": "Écrivez une question d’entretien…",
       "save": "Enregistrer",
       "saveFailed": "Impossible d’enregistrer la question.",
+      "delete": "Supprimer la question d’entretien",
       "loadFailed": "Impossible de charger les questions.",
       "empty": "Aucune question enregistrée pour l’instant."
     },
@@ -1018,6 +1019,7 @@
       "companyUnknown": "Entreprise inconnue",
       "roleUnknown": "Poste sans titre",
       "sharedResume": "CV partagé",
+      "interviewTime": "Entretien",
       "selectAria": "Sélectionner la candidature",
       "dragAria": "Faire glisser pour réorganiser"
     },
@@ -1027,6 +1029,8 @@
       "notes": "Notes",
       "notesPlaceholder": "Ajoutez des notes sur cette candidature…",
       "saveNotes": "Enregistrer les notes",
+      "interviewTime": "Horaire de l'entretien",
+      "saveInterviewTime": "Enregistrer l'horaire",
       "resumeUnavailable": "Le CV soumis n'est plus disponible.",
       "loadFailed": "Impossible de charger cette candidature.",
       "editResume": "Modifier le CV"

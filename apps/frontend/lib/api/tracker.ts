@@ -23,6 +23,7 @@ export interface Application {
   company: string | null;
   role: string | null;
   applied_at: string | null;
+  interview_at: string | null;
   notes: string | null;
   position: number;
   created_at: string;
@@ -57,6 +58,7 @@ export interface ApplicationUpdate {
   company?: string;
   role?: string;
   applied_at?: string;
+  interview_at?: string | null;
 }
 
 export interface ApplicationActionResponse {
@@ -138,6 +140,11 @@ export async function createInterviewQuestion(
 ): Promise<InterviewQuestion> {
   const res = await apiPost(`/applications/${applicationId}/interview-questions`, { question });
   return asJson<InterviewQuestion>(res, 'Failed to save interview question');
+}
+
+export async function deleteInterviewQuestion(questionId: string): Promise<void> {
+  const res = await apiDelete(`/applications/interview-questions/${questionId}`);
+  await asJson<ApplicationActionResponse>(res, 'Failed to delete interview question');
 }
 
 // Update one card (status/position/notes/company/role/applied_at).
