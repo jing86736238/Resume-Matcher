@@ -71,6 +71,12 @@ export function ApplicationCard({
                 {new Date(application.applied_at).toLocaleDateString()}
               </p>
             )}
+            {application.status === 'interview' && application.interview_at && (
+              <p className="mt-1 font-mono text-[10px] uppercase tracking-wide text-primary">
+                {t('tracker.card.interviewTime')}:
+                <span className="ml-1">{new Date(application.interview_at).toLocaleString()}</span>
+              </p>
+            )}
             {sharedResume && (
               <span className="mt-1 inline-flex items-center gap-1 border border-black bg-paper-tint px-1 font-mono text-[10px] uppercase text-ink-soft">
                 <Layers className="h-3 w-3" />
