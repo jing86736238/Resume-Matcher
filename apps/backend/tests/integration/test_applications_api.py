@@ -112,6 +112,47 @@ class TestDetail:
         assert resp.status_code == 404
 
 
+class TestInterviewQuestions:
+    async def test_create_and_list_questions_with_application_context(self, isolated_db):
+        card = await _seed_card(
+            isolated_db, company="Acme Corp", role="Staff Engineer", job_id="jq", resume_id="rq"
+        )
+        async with _client() as client:
+            created = await client.post(
+                f"/api/v1/applications/{card['application_id']}/interview-questions",
+                json={"question": "How would you design this service?"},
+            )
+            listed = await client.get("/api/v1/applications/interview-questions")
+        assert created.status_code == 200
+        assert created.json()["company"] == "Acme Corp"
+        assert listed.status_code == 200
+        assert listed.json()[0]["question"] == "How would you design this service?"
+        assert listed.json()[0]["application_id"] == card["application_id"]
+
+    async def test_question_requires_existing_application_and_non_blank_text(self, isolated_db):
+        async with _client() as client:
+            missing = await client.post(
+                "/api/v1/applications/missing/interview-questions", json={"question": "Q"}
+            )
+            blank = await client.post(
+                "/api/v1/applications/missing/interview-questions", json={"question": "  "}
+            )
+        assert missing.status_code == 404
+        assert blank.status_code == 422
+
+    async def test_deleting_application_removes_questions(self, isolated_db):
+        card = await _seed_card(isolated_db, job_id="jdq", resume_id="rdq")
+        async with _client() as client:
+            await client.post(
+                f"/api/v1/applications/{card['application_id']}/interview-questions",
+                json={"question": "Tell me about a project."},
+            )
+            deleted = await client.delete(f"/api/v1/applications/{card['application_id']}")
+            listed = await client.get("/api/v1/applications/interview-questions")
+        assert deleted.status_code == 200
+        assert listed.json() == []
+
+
 class TestUpdateAndMove:
     async def test_patch_moves_card_across_columns(self, isolated_db):
         a = await _seed_card(isolated_db, job_id="j1", resume_id="r1", status="applied")

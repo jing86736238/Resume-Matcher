@@ -16,7 +16,12 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { useTranslations } from '@/lib/i18n';
-import { getApplicationDetail, updateApplication, type ApplicationDetail } from '@/lib/api/tracker';
+import {
+  createInterviewQuestion,
+  getApplicationDetail,
+  updateApplication,
+  type ApplicationDetail,
+} from '@/lib/api/tracker';
 
 interface CardDetailModalProps {
   applicationId: string | null;
@@ -38,10 +43,15 @@ export function CardDetailModal({
   const [notes, setNotes] = useState('');
   const [savingNotes, setSavingNotes] = useState(false);
   const [notesError, setNotesError] = useState<string | null>(null);
+  const [interviewQuestion, setInterviewQuestion] = useState('');
+  const [savingInterviewQuestion, setSavingInterviewQuestion] = useState(false);
+  const [interviewQuestionError, setInterviewQuestionError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!open || !applicationId) {
       setDetail(null);
+      setInterviewQuestion('');
+      setInterviewQuestionError(null);
       return;
     }
     let cancelled = false;
@@ -52,6 +62,8 @@ export function CardDetailModal({
         setDetail(data);
         setNotes(data.notes ?? '');
         setNotesError(null);
+        setInterviewQuestion('');
+        setInterviewQuestionError(null);
       })
       .catch(() => {
         if (!cancelled) setDetail(null);
@@ -82,6 +94,21 @@ export function CardDetailModal({
       setNotesError(t('common.error'));
     } finally {
       setSavingNotes(false);
+    }
+  };
+
+  const handleSaveInterviewQuestion = async () => {
+    if (!applicationId || !interviewQuestion.trim()) return;
+    setSavingInterviewQuestion(true);
+    setInterviewQuestionError(null);
+    try {
+      await createInterviewQuestion(applicationId, interviewQuestion.trim());
+      setInterviewQuestion('');
+      onUpdated();
+    } catch {
+      setInterviewQuestionError(t('tracker.interviewQuestions.saveFailed'));
+    } finally {
+      setSavingInterviewQuestion(false);
     }
   };
 
@@ -146,6 +173,37 @@ export function CardDetailModal({
                     <Loader2 className="h-4 w-4 animate-spin" />
                   ) : (
                     t('tracker.modal.saveNotes')
+                  )}
+                </Button>
+              </div>
+            </div>
+
+            <div className="space-y-1">
+              <Label htmlFor="interview-question">{t('tracker.interviewQuestions.addLabel')}</Label>
+              <Textarea
+                id="interview-question"
+                value={interviewQuestion}
+                onChange={(e) => setInterviewQuestion(e.target.value)}
+                onKeyDown={handleNotesKeyDown}
+                placeholder={t('tracker.interviewQuestions.placeholder')}
+                rows={3}
+              />
+              <div className="flex items-center justify-end gap-3">
+                {interviewQuestionError && (
+                  <span className="font-mono text-xs text-destructive">
+                    {interviewQuestionError}
+                  </span>
+                )}
+                <Button
+                  size="sm"
+                  variant="outline"
+                  onClick={handleSaveInterviewQuestion}
+                  disabled={savingInterviewQuestion || !interviewQuestion.trim()}
+                >
+                  {savingInterviewQuestion ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    t('tracker.interviewQuestions.save')
                   )}
                 </Button>
               </div>

@@ -33,6 +33,7 @@ import { BulkActionBar } from './bulk-action-bar';
 import { CardDetailModal } from './card-detail-modal';
 import { ManualAddApplicationDialog } from './manual-add-application-dialog';
 import { StatusVisibilityDialog } from './status-visibility-dialog';
+import { InterviewQuestionsDialog } from './interview-questions-dialog';
 import { planMove } from './reorder';
 import {
   readTrackerVisibleStatuses,
@@ -60,6 +61,7 @@ export function KanbanBoard() {
   const [openCardId, setOpenCardId] = useState<string | null>(null);
   const [manualAddOpen, setManualAddOpen] = useState(false);
   const [visibilityDialogOpen, setVisibilityDialogOpen] = useState(false);
+  const [interviewQuestionsOpen, setInterviewQuestionsOpen] = useState(false);
   const [visibleStatuses, setVisibleStatuses] = useState<ApplicationStatus[]>(
     readTrackerVisibleStatuses
   );
@@ -238,6 +240,9 @@ export function KanbanBoard() {
             <Plus className="h-4 w-4" />
             {t('tracker.addApplication')}
           </Button>
+          <Button variant="outline" onClick={() => setInterviewQuestionsOpen(true)}>
+            {t('tracker.interviewQuestions.button')}
+          </Button>
           <Button
             variant="outline"
             onClick={() => setVisibilityDialogOpen(true)}
@@ -361,6 +366,11 @@ export function KanbanBoard() {
         onOpenChange={setVisibilityDialogOpen}
         visibleStatuses={visibleStatuses}
         onVisibilityChange={handleVisibilityChange}
+      />
+
+      <InterviewQuestionsDialog
+        open={interviewQuestionsOpen}
+        onOpenChange={setInterviewQuestionsOpen}
       />
     </div>
   );

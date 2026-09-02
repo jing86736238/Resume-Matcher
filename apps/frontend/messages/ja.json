@@ -983,6 +983,17 @@
     "title": "応募トラッカー",
     "subtitle": "各カスタマイズ済み履歴書の選考状況を管理します。",
     "addApplication": "応募を追加",
+    "interviewQuestions": {
+      "button": "面接質問",
+      "title": "面接質問",
+      "description": "応募に記録した質問を確認します。",
+      "addLabel": "面接質問を追加",
+      "placeholder": "面接質問を入力…",
+      "save": "保存",
+      "saveFailed": "質問を保存できませんでした。",
+      "loadFailed": "質問を読み込めませんでした。",
+      "empty": "記録された面接質問はまだありません。"
+    },
     "visibility": {
       "manage": "管理",
       "title": "ステータス列を管理",

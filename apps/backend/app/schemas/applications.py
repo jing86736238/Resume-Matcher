@@ -3,7 +3,7 @@
 from enum import Enum
 from typing import Any
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class ApplicationStatus(str, Enum):
@@ -101,3 +101,29 @@ class ApplicationActionResponse(BaseModel):
 
     message: str
     affected: int
+
+
+class InterviewQuestionCreate(BaseModel):
+    """Payload for recording one question."""
+
+    question: str = Field(min_length=1)
+
+    @field_validator("question")
+    @classmethod
+    def question_must_not_be_blank(cls, value: str) -> str:
+        value = value.strip()
+        if not value:
+            raise ValueError("Question must not be blank")
+        return value
+
+
+class InterviewQuestionResponse(BaseModel):
+    """A recorded question with the application context needed by the UI."""
+
+    question_id: str
+    application_id: str
+    job_id: str
+    question: str
+    company: str | None = None
+    role: str | None = None
+    created_at: str

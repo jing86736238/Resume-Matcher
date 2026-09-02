@@ -17,6 +17,8 @@ from app.schemas import (
     BulkDelete,
     BulkStatusUpdate,
     ManualApplicationCreate,
+    InterviewQuestionCreate,
+    InterviewQuestionResponse,
 )
 
 logger = logging.getLogger(__name__)
@@ -95,6 +97,33 @@ async def create_application(request: ManualApplicationCreate) -> ApplicationRes
             logger.warning("Failed to cache company/role on job %s: %s", job["job_id"], e)
 
     return ApplicationResponse(**application)
+
+
+@router.get("/interview-questions", response_model=list[InterviewQuestionResponse])
+async def list_interview_questions() -> list[InterviewQuestionResponse]:
+    """List all recorded interview questions with application context."""
+    try:
+        questions = await db.list_interview_questions()
+    except Exception as e:
+        logger.error("Failed to list interview questions: %s", e)
+        raise HTTPException(
+            status_code=500, detail="Failed to load interview questions. Please try again."
+        )
+    return [InterviewQuestionResponse(**question) for question in questions]
+
+
+@router.post(
+    "/{application_id}/interview-questions",
+    response_model=InterviewQuestionResponse,
+)
+async def create_interview_question(
+    application_id: str, request: InterviewQuestionCreate
+) -> InterviewQuestionResponse:
+    """Record one interview question for an application."""
+    question = await db.create_interview_question(application_id, request.question.strip())
+    if question is None:
+        raise HTTPException(status_code=404, detail="Application not found")
+    return InterviewQuestionResponse(**question)
 
 
 @router.get("/{application_id}", response_model=ApplicationDetailResponse)

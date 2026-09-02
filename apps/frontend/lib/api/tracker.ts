@@ -64,6 +64,16 @@ export interface ApplicationActionResponse {
   affected: number;
 }
 
+export interface InterviewQuestion {
+  question_id: string;
+  application_id: string;
+  job_id: string;
+  question: string;
+  company: string | null;
+  role: string | null;
+  created_at: string;
+}
+
 // FastAPI returns `detail` as a string for HTTPException but as an array of
 // `{ msg, loc, ... }` objects for validation errors — coerce both to a string
 // so error messages never render as "[object Object]".
@@ -115,6 +125,19 @@ export async function createApplication(payload: ManualApplicationCreate): Promi
 export async function getApplicationDetail(id: string): Promise<ApplicationDetail> {
   const res = await apiFetch(`/applications/${id}`, { credentials: 'include' });
   return asJson<ApplicationDetail>(res, 'Failed to load application');
+}
+
+export async function listInterviewQuestions(): Promise<InterviewQuestion[]> {
+  const res = await apiFetch('/applications/interview-questions', { credentials: 'include' });
+  return asJson<InterviewQuestion[]>(res, 'Failed to load interview questions');
+}
+
+export async function createInterviewQuestion(
+  applicationId: string,
+  question: string
+): Promise<InterviewQuestion> {
+  const res = await apiPost(`/applications/${applicationId}/interview-questions`, { question });
+  return asJson<InterviewQuestion>(res, 'Failed to save interview question');
 }
 
 // Update one card (status/position/notes/company/role/applied_at).

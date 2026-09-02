@@ -983,6 +983,17 @@
     "title": "Acompanhamento de candidaturas",
     "subtitle": "Acompanhe em que etapa está cada currículo personalizado.",
     "addApplication": "Adicionar candidatura",
+    "interviewQuestions": {
+      "button": "Perguntas de entrevista",
+      "title": "Perguntas de entrevista",
+      "description": "Veja as perguntas registradas para suas candidaturas.",
+      "addLabel": "Adicionar pergunta de entrevista",
+      "placeholder": "Escreva uma pergunta de entrevista…",
+      "save": "Salvar pergunta",
+      "saveFailed": "Não foi possível salvar a pergunta.",
+      "loadFailed": "Não foi possível carregar as perguntas.",
+      "empty": "Nenhuma pergunta registrada ainda."
+    },
     "visibility": {
       "manage": "Gerenciar",
       "title": "Gerenciar colunas de status",

@@ -983,6 +983,17 @@
     "title": "申请追踪",
     "subtitle": "追踪每份定制简历在求职流程中的进展。",
     "addApplication": "添加申请",
+    "interviewQuestions": {
+      "button": "面试题",
+      "title": "面试题",
+      "description": "查看为申请记录的面试题。",
+      "addLabel": "添加面试题",
+      "placeholder": "请输入面试题……",
+      "save": "保存面试题",
+      "saveFailed": "无法保存面试题。",
+      "loadFailed": "无法加载面试题。",
+      "empty": "暂未记录面试题。"
+    },
     "visibility": {
       "manage": "管理",
       "title": "管理状态模块",

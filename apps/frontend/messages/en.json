@@ -983,6 +983,17 @@
     "title": "Application Tracker",
     "subtitle": "Track where each tailored resume stands in your pipeline.",
     "addApplication": "Add Application",
+    "interviewQuestions": {
+      "button": "Interview Questions",
+      "title": "Interview Questions",
+      "description": "Review questions recorded for your applications.",
+      "addLabel": "Add interview question",
+      "placeholder": "Write an interview question…",
+      "save": "Save question",
+      "saveFailed": "Could not save the interview question.",
+      "loadFailed": "Could not load interview questions.",
+      "empty": "No interview questions recorded yet."
+    },
     "visibility": {
       "manage": "Manage",
       "title": "Manage status columns",

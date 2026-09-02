@@ -983,6 +983,17 @@
     "title": "Seguimiento de candidaturas",
     "subtitle": "Controla en qué punto está cada currículum adaptado de tu proceso.",
     "addApplication": "Añadir candidatura",
+    "interviewQuestions": {
+      "button": "Preguntas de entrevista",
+      "title": "Preguntas de entrevista",
+      "description": "Revisa las preguntas registradas para tus candidaturas.",
+      "addLabel": "Añadir pregunta de entrevista",
+      "placeholder": "Escribe una pregunta de entrevista…",
+      "save": "Guardar pregunta",
+      "saveFailed": "No se pudo guardar la pregunta.",
+      "loadFailed": "No se pudieron cargar las preguntas.",
+      "empty": "Aún no hay preguntas registradas."
+    },
     "visibility": {
       "manage": "Gestionar",
       "title": "Gestionar columnas de estado",

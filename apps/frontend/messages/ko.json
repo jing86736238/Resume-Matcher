@@ -983,6 +983,17 @@
     "title": "지원 현황 트래커",
     "subtitle": "각 맞춤화된 이력서가 지원 파이프라인에서 어느 단계에 있는지 추적하세요.",
     "addApplication": "지원 추가",
+    "interviewQuestions": {
+      "button": "면접 질문",
+      "title": "면접 질문",
+      "description": "지원 기록에 저장한 질문을 확인하세요.",
+      "addLabel": "면접 질문 추가",
+      "placeholder": "면접 질문을 입력하세요…",
+      "save": "질문 저장",
+      "saveFailed": "질문을 저장하지 못했습니다.",
+      "loadFailed": "질문을 불러오지 못했습니다.",
+      "empty": "아직 기록된 면접 질문이 없습니다."
+    },
     "visibility": {
       "manage": "관리",
       "title": "상태 열 관리",

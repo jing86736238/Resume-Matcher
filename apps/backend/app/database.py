@@ -25,7 +25,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import settings
 from app.db_engine import init_models_sync, make_async_engine, make_sync_engine
-from app.models import ApiKey, Application, Improvement, Job, Resume
+from app.models import ApiKey, Application, Improvement, InterviewQuestion, Job, Resume
 
 logger = logging.getLogger(__name__)
 
@@ -175,6 +175,20 @@ class Database:
             "position": row.position,
             "created_at": row.created_at,
             "updated_at": row.updated_at,
+        }
+
+    @staticmethod
+    def _interview_question_to_dict(
+        question: InterviewQuestion, application: Application
+    ) -> dict[str, Any]:
+        return {
+            "question_id": question.question_id,
+            "application_id": application.application_id,
+            "job_id": application.job_id,
+            "question": question.question,
+            "company": application.company,
+            "role": application.role,
+            "created_at": question.created_at,
         }
 
     # -- Resume operations --------------------------------------------------
@@ -575,6 +589,37 @@ class Database:
             row = await session.get(Application, application_id)
             return self._application_to_dict(row) if row else None
 
+    async def create_interview_question(
+        self, application_id: str, question: str
+    ) -> dict[str, Any] | None:
+        """Create a question for an existing application."""
+        async with self._session() as session:
+            application = await session.get(Application, application_id)
+            if application is None:
+                return None
+            row = InterviewQuestion(
+                question_id=str(uuid4()),
+                application_id=application_id,
+                question=question,
+                created_at=_now(),
+            )
+            session.add(row)
+            await session.commit()
+            return self._interview_question_to_dict(row, application)
+
+    async def list_interview_questions(self) -> list[dict[str, Any]]:
+        """List recorded questions with their application context."""
+        async with self._session() as session:
+            result = await session.execute(
+                select(InterviewQuestion, Application)
+                .join(Application, InterviewQuestion.application_id == Application.application_id)
+                .order_by(InterviewQuestion.created_at.desc())
+            )
+            return [
+                self._interview_question_to_dict(question, application)
+                for question, application in result.all()
+            ]
+
     async def update_application(
         self, application_id: str, updates: dict[str, Any]
     ) -> dict[str, Any] | None:
@@ -657,6 +702,11 @@ class Database:
             if row is None:
                 return False
             status = row.status
+            await session.execute(
+                delete(InterviewQuestion).where(
+                    InterviewQuestion.application_id == application_id
+                )
+            )
             await session.delete(row)
             await session.flush()
             await self._renumber(session, status)
@@ -673,6 +723,11 @@ class Database:
                 if row is None:
                     continue
                 affected.add(row.status)
+                await session.execute(
+                    delete(InterviewQuestion).where(
+                        InterviewQuestion.application_id == application_id
+                    )
+                )
                 await session.delete(row)
                 deleted += 1
             await session.flush()
@@ -762,6 +817,7 @@ class Database:
         """
         async with self._session() as session:
             await session.execute(delete(Application))
+            await session.execute(delete(InterviewQuestion))
             await session.execute(delete(Improvement))
             await session.execute(delete(Job))
             await session.execute(delete(Resume))

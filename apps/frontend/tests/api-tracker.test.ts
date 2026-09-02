@@ -3,7 +3,9 @@ import {
   bulkUpdateStatus,
   bulkDeleteApplications,
   createApplication,
+  createInterviewQuestion,
   deleteApplication,
+  listInterviewQuestions,
   updateApplication,
 } from '@/lib/api/tracker';
 import { llmProviderToKeyProvider } from '@/lib/api/config';
@@ -85,6 +87,25 @@ describe('tracker API client', () => {
     const { url, options } = lastCall();
     expect(url).toContain('/applications/x');
     expect(options.method).toBe('DELETE');
+  });
+
+  it('createInterviewQuestion POSTs the application question payload', async () => {
+    fetchMock.mockResolvedValue(
+      new Response(JSON.stringify({ question_id: 'q1' }), { status: 200 })
+    );
+    await createInterviewQuestion('app-1', 'How do you test?');
+    const { url, options } = lastCall();
+    expect(url).toContain('/applications/app-1/interview-questions');
+    expect(options.method).toBe('POST');
+    expect(JSON.parse(String(options.body))).toEqual({ question: 'How do you test?' });
+  });
+
+  it('listInterviewQuestions GETs the global question list', async () => {
+    fetchMock.mockResolvedValue(new Response(JSON.stringify([]), { status: 200 }));
+    await listInterviewQuestions();
+    const { url, options } = lastCall();
+    expect(url).toContain('/applications/interview-questions');
+    expect(options.method).toBeUndefined();
   });
 
   it('bulkDeleteApplications POSTs to /applications/bulk-delete', async () => {
